@@ -8,7 +8,7 @@ read_file, read_file_base64, get_file_info, hash_file, search_in_file, write_fil
 
 ## Dependencies
 
-The MCP protocol, server, transport, process, JSON, and HTTP implementations are provided by [`pooriayousefi/mcpxx`](https://github.com/pooriayousefi/mcpxx), included as a pinned Git submodule at `external/mcpxx` (commit `8d3e971072c263dd5132c5b48e44c15926d21190`).
+The MCP protocol, server, transport, process, JSON, and HTTP implementations are provided by [`pooriayousefi/mcpxx`](https://github.com/pooriayousefi/mcpxx), included as a pinned Git submodule at `external/mcpxx` (commit `c7753ec6b15eb15b6ecdfed82b93ace745ba0c6b`).
 
 ## Requirements
 
