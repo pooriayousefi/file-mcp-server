@@ -171,7 +171,7 @@ namespace pooriayousefi::mcp
         std::error_code ec{};
         const char* configured_root = std::getenv("FILE_MCP_ROOT");
         const fs::path requested_root =
-            (configured_root != nullptr && configured_root[0] != '\\0')
+            (configured_root != nullptr && configured_root[0] != '\0')
                 ? fs::path(configured_root)
                 : fs::current_path(ec);
         if (ec)
