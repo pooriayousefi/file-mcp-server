@@ -39,7 +39,6 @@
 #include <system_error>
 #include <vector>
 #include <utility>
-#include <cstdlib>
 #include <nlohmann/json.hpp>
 #include "pooriayousefi/utility/common.hpp"
 #include "pooriayousefi/utility/expected.hpp"
@@ -136,80 +135,27 @@ namespace pooriayousefi::mcp
         return result;
     }
 
-    [[nodiscard]] bool path_is_within(const fs::path& root, const fs::path& candidate)
-    {
-        auto root_it = root.begin();
-        auto candidate_it = candidate.begin();
-
-        for (; root_it != root.end(); ++root_it, ++candidate_it)
-        {
-            if (candidate_it == candidate.end() || *root_it != *candidate_it)
-                return false;
-        }
-        return true;
-    }
-
-    // FILE_MCP_ROOT defines the filesystem boundary. Relative paths are
-    // interpreted relative to that root; absolute paths must remain inside it.
-    // weakly_canonical resolves existing symlinks, including intermediate ones,
-    // while still supporting paths whose final components do not exist yet.
     [[nodiscard]] Expected<fs::path, std::string> require_path_arg(const Json& args, const char* key)
     {
         Expected<fs::path, std::string> result{};
+
         auto text_or_error = require_string_arg(args, key);
         if (!text_or_error.has_value())
         {
             result.set_error(text_or_error.get_error());
-            return result;
         }
-        if (text_or_error.get_value().empty())
+        else
         {
-            result.set_error(std::string("'") + key + "' must not be empty.");
-            return result;
+            if (text_or_error.get_value().empty())
+            {
+                result.set_error(std::string("'") + key + "' must not be empty.");
+            }
+            else
+            {
+                result.set_value(fs::path(text_or_error.get_value()));
+            }
         }
 
-        std::error_code ec{};
-        const char* configured_root = std::getenv("FILE_MCP_ROOT");
-        const fs::path requested_root =
-            (configured_root != nullptr && configured_root[0] != '\0')
-                ? fs::path(configured_root)
-                : fs::current_path(ec);
-        if (ec)
-        {
-            result.set_error("Cannot determine the filesystem root: " + ec.message());
-            return result;
-        }
-
-        const fs::path root = fs::weakly_canonical(requested_root, ec);
-        if (ec)
-        {
-            result.set_error("Cannot resolve FILE_MCP_ROOT: " + ec.message());
-            return result;
-        }
-        if (!fs::is_directory(root, ec) || ec)
-        {
-            result.set_error("FILE_MCP_ROOT must identify an accessible directory.");
-            return result;
-        }
-
-        const fs::path supplied{text_or_error.get_value()};
-        const fs::path requested = supplied.is_absolute() ? supplied : root / supplied;
-        const fs::path resolved = fs::weakly_canonical(requested, ec);
-        if (ec)
-        {
-            result.set_error("Cannot resolve path '" + supplied.string() + "': " + ec.message());
-            return result;
-        }
-        if (!path_is_within(root, resolved))
-        {
-            result.set_error("Path is outside the permitted filesystem root: '" + supplied.string() + "'");
-            return result;
-        }
-
-        // Keep the lexical path so delete_file removes a symlink itself,
-        // rather than its resolved target. The resolved path is used for
-        // containment validation only.
-        result.set_value(requested.lexically_normal());
         return result;
     }
 

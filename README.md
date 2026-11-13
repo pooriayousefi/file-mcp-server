@@ -8,7 +8,7 @@ read_file, read_file_base64, get_file_info, hash_file, search_in_file, write_fil
 
 ## Dependencies
 
-The MCP protocol, server, transport, process, JSON, and HTTP implementations are provided by [`pooriayousefi/mcpxx`](https://github.com/pooriayousefi/mcpxx), included as a pinned Git submodule at `external/mcpxx` (commit `c7753ec6b15eb15b6ecdfed82b93ace745ba0c6b`).
+The MCP protocol, server, transport, process, JSON, and HTTP implementations are provided by [`pooriayousefi/mcpxx`](https://github.com/pooriayousefi/mcpxx), included as a pinned Git submodule at `external/mcpxx` (commit `8d3e971072c263dd5132c5b48e44c15926d21190`).
 
 ## Requirements
 
@@ -37,8 +37,6 @@ clang++ -std=c++20 -O2 -pthread -I external/mcpxx/include \\
 On Windows with MinGW, add `-lws2_32`.
 
 ## Run
-
-The file server confines every tool path to a filesystem root. By default this is the working directory from which the server starts. Set `FILE_MCP_ROOT` to an explicit directory to change the boundary; relative paths are resolved beneath that root, and absolute paths are accepted only when they remain inside it. Existing symlinks are resolved for boundary checks, including symlinks in intermediate path components. Run the server with an appropriately restricted OS account: path checks do not eliminate filesystem race conditions if an untrusted local process can concurrently replace path components.
 
 The default transport is stdio:
 
