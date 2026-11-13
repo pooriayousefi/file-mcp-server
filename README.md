@@ -38,6 +38,8 @@ On Windows with MinGW, add `-lws2_32`.
 
 ## Run
 
+The file server confines every tool path to a filesystem root. By default this is the working directory from which the server starts. Set `FILE_MCP_ROOT` to an explicit directory to change the boundary; relative paths are resolved beneath that root, and absolute paths are accepted only when they remain inside it. Existing symlinks are resolved for boundary checks, including symlinks in intermediate path components. Run the server with an appropriately restricted OS account: path checks do not eliminate filesystem race conditions if an untrusted local process can concurrently replace path components.
+
 The default transport is stdio:
 
 ```sh
